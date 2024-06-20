@@ -1,0 +1,92 @@
+import java.math.BigInteger;
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.util.Scanner;
+
+public class Rational {
+    private BigInteger numerator;
+    private BigInteger denominator;
+
+    // Constructor
+    public Rational(BigInteger numerator, BigInteger denominator) {
+        if (denominator.equals(BigInteger.ZERO)) {
+            throw new ArithmeticException("Denominator cannot be zero");
+        }
+        BigInteger gcd = numerator.gcd(denominator);
+        this.numerator = numerator.divide(gcd);
+        this.denominator = denominator.divide(gcd);
+        if (this.denominator.compareTo(BigInteger.ZERO) < 0) {
+            this.numerator = this.numerator.negate();
+            this.denominator = this.denominator.negate();
+        }
+    }
+
+    // Addition
+    public Rational add(Rational other) {
+        BigInteger n = this.numerator.multiply(other.denominator).add(this.denominator.multiply(other.numerator));
+        BigInteger d = this.denominator.multiply(other.denominator);
+        return new Rational(n, d);
+    }
+
+    // Subtraction
+    public Rational subtract(Rational other) {
+        BigInteger n = this.numerator.multiply(other.denominator).subtract(this.denominator.multiply(other.numerator));
+        BigInteger d = this.denominator.multiply(other.denominator);
+        return new Rational(n, d);
+    }
+
+    // Multiplication
+    public Rational multiply(Rational other) {
+        BigInteger n = this.numerator.multiply(other.numerator);
+        BigInteger d = this.denominator.multiply(other.denominator);
+        return new Rational(n, d);
+    }
+
+    // Division
+    public Rational divide(Rational other) {
+        if (other.numerator.equals(BigInteger.ZERO)) {
+            throw new ArithmeticException("Cannot divide by zero");
+        }
+        BigInteger n = this.numerator.multiply(other.denominator);
+        BigInteger d = this.denominator.multiply(other.numerator);
+        return new Rational(n, d);
+    }
+
+    // Convert to double
+    public double doubleValue() {
+        return new BigDecimal(numerator).divide(new BigDecimal(denominator), MathContext.DECIMAL128).doubleValue();
+    }
+
+    @Override
+    public String toString() {
+        if (denominator.equals(BigInteger.ONE)) {
+            return numerator.toString();
+        } else {
+            return numerator + "/" + denominator;
+        }
+    }
+
+    // Test program
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        // Read first rational number
+        System.out.print("Enter the first rational number: ");
+        BigInteger num1 = scanner.nextBigInteger();
+        BigInteger den1 = scanner.nextBigInteger();
+        Rational r1 = new Rational(num1, den1);
+
+        // Read second rational number
+        System.out.print("Enter the second rational number: ");
+        BigInteger num2 = scanner.nextBigInteger();
+        BigInteger den2 = scanner.nextBigInteger();
+        Rational r2 = new Rational(num2, den2);
+
+        // Perform operations and display results
+        System.out.println(r1 + " + " + r2 + " = " + r1.add(r2));
+        System.out.println(r1 + " - " + r2 + " = " + r1.subtract(r2));
+        System.out.println(r1 + " * " + r2 + " = " + r1.multiply(r2));
+        System.out.println(r1 + " / " + r2 + " = " + r1.divide(r2));
+        System.out.println(r2 + " is " + r2.doubleValue());
+    }
+}
